@@ -10,18 +10,11 @@ var interval = 1000;
 		setTimeout(function(){
 			audio_element = $('audio')[0];
 			audio_duration = audio_element.duration;			
+			do_ajax();
 		},500);
 		
-		run_ajax_timeout();					
 	})
 })(jQuery);
-
-function run_ajax_timeout(){
-	setTimeout(function(){		
-		do_ajax();		
-		run_ajax_timeout();
-	}, interval);
-}
 
 function do_ajax(){
 	data = {};
@@ -46,7 +39,7 @@ function do_ajax(){
 				$('.ping-message').append("<div>Sequence " + count + " - Cannot connect to server " + data.domain + "!</div>");
 				
 				if( $('audio')[0].paused ){
-					console.log('played it!');
+					console.log('Connection lost! Start the alarm!');
 					$('audio')[0].play();					
 				}
 			}
@@ -55,12 +48,17 @@ function do_ajax(){
 				$html = "<div>Sequence: <span class='num'>"+count+"</span> - <span class='message'>"+message+"</span></div>";
 				$('.ping-message').append($html);
 				if( !$('audio')[0].paused ){
-					console.log('stopped it!');
+					console.log('We now have a connection, stop the alarm!');
 					$('audio')[0].pause();
 				}
 			}
 			if( scrollheight > 500 ) $('.ping-message').scrollTop( scrollheight );
 			count++;
+			
+			setTimeout(function(){		
+				do_ajax();		
+				//run_ajax_timeout();
+			}, interval);
 		}
 	});
 }
